@@ -1,0 +1,597 @@
+/* SkillBridge AI — Production Authentication Page Styling */
+
+.login-page-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  background-color: var(--bg-base);
+  background-image: 
+    radial-gradient(circle at 15% 20%, hsla(265, 89%, 66%, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, hsla(210, 95%, 55%, 0.10) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, hsla(188, 95%, 48%, 0.04) 0%, transparent 50%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background decorative grid */
+.login-page-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(hsla(217, 25%, 28%, 0.15) 1px, transparent 1px),
+                    linear-gradient(90deg, hsla(217, 25%, 28%, 0.15) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Responsive Split Screen Layout */
+.login-split-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+}
+
+/* LEFT SECTION — Brand Showcase & Value Proposition */
+.brand-showcase-section {
+  flex: 1.15;
+  padding: 64px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border-subtle);
+  background: linear-gradient(135deg, hsla(222, 47%, 9%, 0.75) 0%, hsla(224, 71%, 5%, 0.9) 100%);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-showcase-section::after {
+  content: '';
+  position: absolute;
+  bottom: -120px;
+  left: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.08;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-logo-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px hsla(265, 89%, 66%, 0.35);
+  color: white;
+}
+
+.brand-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-tagline {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent-cyan);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.brand-hero-content {
+  margin: 40px 0;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: hsla(265, 89%, 66%, 0.12);
+  border: 1px solid hsla(265, 89%, 66%, 0.3);
+  color: var(--primary-hover);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.brand-main-heading {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.8px;
+}
+
+.brand-main-heading span {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-description {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 32px;
+}
+
+/* 5-Step Career Path Cards */
+.career-journey-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 540px;
+}
+
+.career-step-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: hsla(217, 33%, 14%, 0.45);
+  border: 1px solid hsla(217, 25%, 28%, 0.35);
+  transition: all var(--transition-normal);
+}
+
+.career-step-item:hover {
+  background: hsla(217, 33%, 18%, 0.7);
+  border-color: var(--border-bright);
+  transform: translateX(4px);
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: hsla(265, 89%, 66%, 0.18);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.step-content p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Platform Stakeholders Pill Badges */
+.stakeholders-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.stakeholders-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.stakeholder-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stakeholder-pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: hsla(210, 40%, 98%, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+/* RIGHT SECTION — Authentication Form */
+.login-form-section {
+  flex: 0.95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 36px;
+  position: relative;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 10;
+}
+
+.login-card-header {
+  margin-bottom: 28px;
+}
+
+.login-card-header h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.login-card-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Form Group Styles */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 44px 0 42px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px hsla(265, 89%, 66%, 0.18);
+  background: hsla(224, 71%, 6%, 1);
+}
+
+.form-input.error {
+  border-color: var(--accent-rose);
+  box-shadow: 0 0 0 3px hsla(350, 89%, 60%, 0.15);
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.toggle-password-btn:hover {
+  color: var(--text-primary);
+}
+
+.field-error-message {
+  font-size: 12px;
+  color: var(--accent-rose);
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Forgot Password Link Row */
+.forgot-password-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -10px;
+  margin-bottom: 24px;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: var(--primary-hover);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.forgot-password-link:hover {
+  color: #c084fc;
+  text-decoration: underline;
+}
+
+/* Primary Submit Button */
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--primary-gradient);
+  border: none;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px hsla(265, 89%, 66%, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.submit-btn:hover:not(:disabled) {
+  opacity: 0.95;
+  box-shadow: 0 6px 20px hsla(265, 89%, 66%, 0.45);
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* OR Divider */
+.or-divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.or-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.or-text {
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* Google Sign-In Button */
+.google-sign-in-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.google-sign-in-btn:hover {
+  background: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.google-icon-svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Bottom Registration Link */
+.register-prompt-row {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.register-link-btn {
+  background: none;
+  border: none;
+  color: var(--primary-hover);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 6px;
+  transition: color var(--transition-fast);
+}
+
+.register-link-btn:hover {
+  text-decoration: underline;
+  color: #c084fc;
+}
+
+/* 1-Click Evaluation Credentials Helper */
+.demo-credentials-box {
+  margin-top: 28px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: hsla(217, 33%, 12%, 0.8);
+  border: 1px dashed hsla(265, 89%, 66%, 0.35);
+}
+
+.demo-credentials-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.demo-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.demo-role-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.demo-role-btn:hover {
+  background: hsla(265, 89%, 66%, 0.15);
+  border-color: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Error Banner */
+.auth-error-banner {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: hsla(350, 89%, 60%, 0.12);
+  border: 1px solid var(--accent-rose);
+  color: #fecdd3;
+  font-size: 13px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.auth-error-close {
+  background: none;
+  border: none;
+  color: #fecdd3;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 2px;
+  opacity: 0.7;
+}
+
+.auth-error-close:hover {
+  opacity: 1;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .brand-showcase-section {
+    padding: 40px 32px;
+  }
+  .brand-main-heading {
+    font-size: 30px;
+  }
+  .login-card {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 860px) {
+  .login-split-layout {
+    flex-direction: column;
+  }
+  .brand-showcase-section {
+    flex: none;
+    padding: 36px 24px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .brand-hero-content {
+    margin: 20px 0;
+  }
+  .brand-main-heading {
+    font-size: 26px;
+  }
+  .career-journey-list {
+    display: none; /* Collapsed on mobile for swift login access */
+  }
+  .login-form-section {
+    flex: none;
+    padding: 32px 20px;
+  }
+  .login-card {
+    max-width: 100%;
+  }
+}

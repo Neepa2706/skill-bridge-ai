@@ -1,0 +1,85 @@
+# ============================================================================
+# SkillBridge AI — Git Ignore Configuration
+# ============================================================================
+
+# Dependencies
+node_modules/
+*/node_modules/
+package-lock.json.bak
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build and Production Distribution
+dist/
+*/dist/
+dist-ssr/
+*/dist-ssr/
+build/
+*/build/
+out/
+.next/
+
+# Environment Variables & Secrets
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+!*/.env.example
+
+# Local SQLite Database files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+server/skillbridge.db
+
+# Python virtual environments & bytecode
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Testing & Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Cache directories
+.cache/
+.eslintcache
+.oxlintcache
+.parcel-cache
+.turbo
+
+# OS Generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary & Log files
+*.log
+logs/
+tmp/
+temp/
+.temp/
+.tmp/

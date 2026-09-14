@@ -1,0 +1,176 @@
+/* SkillBridge AI - AI Conversation Trainer Styling */
+
+.comm-chat-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: calc(100vh - 120px);
+}
+
+.comm-chat-header {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.comm-modes-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.comm-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.comm-mode-btn.active {
+  background: #7c3aed;
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
+/* Chat History Window */
+.comm-chat-messages {
+  flex: 1;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Bubbles */
+.comm-message-row {
+  display: flex;
+  gap: 14px;
+  max-width: 82%;
+}
+
+.comm-message-row.ai {
+  align-self: flex-start;
+}
+
+.comm-message-row.student {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.comm-message-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.comm-bubble {
+  padding: 16px 20px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comm-bubble.ai {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+  border-top-left-radius: 4px;
+}
+
+.comm-bubble.student {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: #ffffff;
+  border-top-right-radius: 4px;
+}
+
+/* Live Coaching Chips below Student Message */
+.comm-turn-coaching {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+}
+
+.comm-turn-coach-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Composer Bar */
+.comm-chat-composer {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.comm-composer-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14.5px;
+  outline: none;
+  padding: 8px;
+}
+
+.comm-send-btn {
+  padding: 10px 18px;
+  background: #8b5cf6;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.comm-send-btn:hover {
+  background: #7c3aed;
+}
+
+.comm-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

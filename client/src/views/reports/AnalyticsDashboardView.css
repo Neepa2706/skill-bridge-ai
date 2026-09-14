@@ -1,0 +1,28 @@
+.analytics-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dist-bar-wrapper {
+  height: 24px;
+  background: var(--bg-base);
+  border-radius: var(--radius-sm);
+  display: flex;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.dist-bar-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.supply-demand-bar {
+  height: 8px;
+  background: var(--bg-base);
+  border-radius: 999px;
+  overflow: hidden;
+  display: flex;
+  margin-top: 4px;
+}

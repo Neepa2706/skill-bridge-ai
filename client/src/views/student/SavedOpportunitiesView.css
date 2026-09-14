@@ -1,0 +1,45 @@
+.saved-opps-view {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 24px 32px 64px;
+  color: var(--text-primary);
+  animation: fadeIn 0.25s ease;
+}
+
+.saved-header {
+  margin-bottom: 24px;
+}
+
+.saved-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.saved-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Deadline Urgent Alert Banner */
+.saved-urgent-banner {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.saved-urgent-banner strong {
+  color: #fff;
+}

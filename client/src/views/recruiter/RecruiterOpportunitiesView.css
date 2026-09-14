@@ -1,0 +1,36 @@
+.recruiter-opps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.opp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-published {
+  background: hsla(158, 82%, 40%, 0.15);
+  color: var(--accent-emerald);
+}
+
+.status-pending {
+  background: hsla(40, 95%, 55%, 0.15);
+  color: #f59e0b;
+}
+
+.status-closed {
+  background: hsla(0, 75%, 60%, 0.15);
+  color: var(--accent-rose);
+}
+
+.status-draft {
+  background: hsla(215, 20%, 50%, 0.15);
+  color: var(--text-muted);
+}
