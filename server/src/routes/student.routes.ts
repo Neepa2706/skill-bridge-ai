@@ -728,12 +728,13 @@ router.delete('/history', authenticateToken, requireRole(['student', 'admin']), 
     safeExec('DELETE FROM saved_opportunities WHERE user_id = ?', [userId]);
     safeExec('DELETE FROM notifications WHERE user_id = ?', [userId]);
 
-    // Reset readiness score and level in student_profiles
+    // Reset readiness score, college name, and level in student_profiles
     execute(`
       UPDATE student_profiles 
-      SET career_readiness_score = 0, current_level = 'Beginner', updated_at = CURRENT_TIMESTAMP 
+      SET career_readiness_score = 0, current_level = 'Beginner', college_name = '', department = '', education_details = '', updated_at = CURRENT_TIMESTAMP 
       WHERE user_id = ?
     `, [userId]);
+
 
     console.log(`[History] Deleted all history records for user: ${userId}`);
 

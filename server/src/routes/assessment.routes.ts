@@ -4,6 +4,7 @@ import { authenticateToken, requireRole } from '../middleware/auth.js';
 import { queryOne, queryAll, execute } from '../db/database.js';
 import { generateAdaptiveAssessment } from '../services/ai/assessmentGenerator.js';
 import { evaluateAssessmentSubmission } from '../services/ai/aiReportService.js';
+import { detectSEB, generateSEBConfig } from '../services/proctoring/sebService.js';
 
 const router = Router();
 
@@ -279,4 +280,43 @@ router.post('/proctor-log', authenticateToken, (req: Request, res: Response): vo
   }
 });
 
+// Safe Exam Browser (SEB) Client Status Verification
+router.get('/seb-status', (req: Request, res: Response): void => {
+
+  try {
+    const status = detectSEB(req);
+    res.json({
+      success: true,
+      isSEB: status.isSEB,
+      version: status.version,
+      hasRequestHash: status.hasRequestHash,
+      hasConfigKeyHash: status.hasConfigKeyHash,
+      userAgent: status.userAgent
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to detect SEB status.' });
+  }
+});
+
+// Download Safe Exam Browser (.seb) Configuration File
+router.get('/seb-config', (req: Request, res: Response): void => {
+  try {
+    const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const startUrl = `${clientUrl}/?mode=seb&exam=initial`;
+    const quitUrl = `${clientUrl}/`;
+    const configXml = generateSEBConfig({
+      startUrl,
+      quitUrl,
+      examTitle: 'SkillBridge AI - Proctored Adaptive Assessment'
+    });
+
+    res.setHeader('Content-Type', 'application/seb');
+    res.setHeader('Content-Disposition', 'attachment; filename="SkillBridge-Assessment.seb"');
+    res.send(configXml);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to generate SEB configuration.' });
+  }
+});
+
 export default router;
+

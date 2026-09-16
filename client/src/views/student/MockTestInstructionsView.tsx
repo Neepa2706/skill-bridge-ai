@@ -214,8 +214,47 @@ export const MockTestInstructionsView: React.FC<MockTestInstructionsViewProps> =
           </ul>
         </div>
 
+        {/* Safe Exam Browser (SEB) Integration Card */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, hsla(217, 91%, 60%, 0.08) 0%, hsla(265, 89%, 66%, 0.08) 100%)',
+            border: '1px solid var(--border-bright)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '20px 24px',
+            marginBottom: '24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <span style={{ fontSize: '18px' }}>🛡️</span>
+              <h4 style={{ fontSize: '15px', fontWeight: 700 }}>Safe Exam Browser (SEB) Enabled</h4>
+              <span className="badge badge-success" style={{ fontSize: '10px' }}>SEB Ready</span>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '640px', lineHeight: 1.5 }}>
+              This assessment enforces workstation lockdown. You can launch directly using the official desktop <strong>Safe Exam Browser</strong> application or continue in this browser with strict proctored fullscreen lockdown.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <a
+              href="/api/assessment/seb-config"
+              download="SkillBridge-Assessment.seb"
+              className="btn btn-outline btn-sm"
+              id="download-seb-mock-test-btn"
+            >
+              📥 Download .seb Config
+            </a>
+          </div>
+        </div>
+
         {/* Bottom Actions */}
         <div className="instructions-actions">
+
           <div className="attempts-notice">
             <span>Attempts Used: </span>
             <strong>{data.attemptsUsed} of {data.maxAttempts}</strong>

@@ -61,7 +61,7 @@ export async function seedDatabase() {
     );
   }
 
-  // Student Profile
+  // Student Profile (Clean baseline for new user experience)
   execute(
     `INSERT OR REPLACE INTO student_profiles (
       id, user_id, college_name, department, year_of_study, education_details,
@@ -71,19 +71,20 @@ export async function seedDatabase() {
     [
       'prof-student-1',
       'usr-student-1',
-      'Stanford Institute of Technology',
-      'Computer Science & Engineering',
-      3,
-      'B.Tech in Computer Science & Engineering (GPA: 3.8/4.0)',
+      '', // Blank college - to be configured by candidate
+      '', // Blank department
+      1,
+      '',
       'Software Developer',
       'role-software-dev',
-      'Intermediate',
-      JSON.stringify(['Python', 'JavaScript', 'SQL', 'C++']),
-      JSON.stringify(['English', 'Japanese', 'German']),
-      JSON.stringify(['Interactive Projects', 'Video Tutorials', 'Timed Coding Contests']),
-      78.5
+      'Beginner',
+      JSON.stringify(['Python', 'JavaScript']),
+      JSON.stringify(['English']),
+      JSON.stringify(['Interactive Projects', 'Video Tutorials']),
+      0.0 // Authentic 0% baseline until diagnostic assessment is completed
     ]
   );
+
 
   // College & Department
   execute(
@@ -171,43 +172,9 @@ export async function seedDatabase() {
     );
   }
 
-  // Student Verified Skills
-  const studentInitialSkills = [
-    { skillId: 'skl-py', level: 65, verified: 65 },
-    { skillId: 'skl-dsa', level: 42, verified: 42 },
-    { skillId: 'skl-sql', level: 60, verified: 60 },
-    { skillId: 'skl-arch', level: 55, verified: 55 },
-    { skillId: 'skl-ps', level: 58, verified: 58 },
-    { skillId: 'skl-cs', level: 68, verified: 68 },
-    { skillId: 'skl-en', level: 75, verified: 75 },
-    { skillId: 'skl-ja', level: 35, verified: 35 },
-    { skillId: 'skl-de', level: 30, verified: 30 }
-  ];
+  // Note: Student skills and gaps are intentionally not pre-seeded so genuine candidates
+  // establish their real skills through the diagnostic assessment.
 
-  for (const ss of studentInitialSkills) {
-    execute(
-      `INSERT OR REPLACE INTO student_skills (id, user_id, skill_id, current_level, verified_score)
-       VALUES (?, ?, ?, ?, ?)`,
-      [`ss-${ss.skillId}`, 'usr-student-1', ss.skillId, ss.level, ss.verified]
-    );
-  }
-
-  // Initial Skill Gaps
-  const studentGaps = [
-    { skillId: 'skl-dsa', current: 42, req: 75, status: 'critical', gapPct: 33, prio: 1 },
-    { skillId: 'skl-ps', current: 58, req: 80, status: 'critical', gapPct: 22, prio: 2 },
-    { skillId: 'skl-py', current: 65, req: 75, status: 'needs_improvement', gapPct: 10, prio: 3 },
-    { skillId: 'skl-sql', current: 60, req: 65, status: 'needs_improvement', gapPct: 5, prio: 4 },
-    { skillId: 'skl-en', current: 75, req: 70, status: 'good', gapPct: 0, prio: 5 }
-  ];
-
-  for (const g of studentGaps) {
-    execute(
-      `INSERT OR REPLACE INTO skill_gaps (id, user_id, target_role_id, skill_id, current_level, required_level, gap_status, gap_percentage, priority_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [`sg-${g.skillId}`, 'usr-student-1', 'role-software-dev', g.skillId, g.current, g.req, g.status, g.gapPct, g.prio]
-    );
-  }
 
   // 3. SEED COURSES, MODULES, LESSONS (STEP 7 CURRICULUM)
   const courses = [
@@ -642,204 +609,8 @@ export async function seedDatabase() {
     );
   }
 
-  // SEED ENROLLMENT & PROGRESS FOR DEMO STUDENT (usr-student-1)
-  // Student enrolled in Python Fundamentals with realistic progress as in prompt example:
-  // Lesson 1 ✓ (100%), Lesson 2 ✓ (100%), Lesson 3 -> 65% in-progress!
-  // Overall course progress: (1 + 1 + 0.65) / 8 * 100 = 33.1% (~35%)
-  execute(
-    `INSERT OR REPLACE INTO course_enrollments (
-      id, user_id, student_id, course_id, roadmap_id, status, progress_percentage, started_at, last_accessed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'enr-py-1',
-      'usr-student-1',
-      'usr-student-1',
-      'crs-py-201',
-      null,
-      'in_progress',
-      35.0,
-      '2026-09-08 10:00:00',
-      '2026-09-11 11:30:00'
-    ]
-  );
+  // Note: Student course enrollment, lesson progress, and activities are created genuinely as students interact with courses.
 
-  // Lesson 1 Completed (Video, fully watched)
-  execute(
-    `INSERT OR REPLACE INTO lesson_progress (
-      id, user_id, student_id, lesson_id, is_completed, completed, content_completed, practice_completed,
-      progress_percentage, playback_position, read_position, time_spent_seconds, last_accessed_at, completed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'lp-py-1',
-      'usr-student-1',
-      'usr-student-1',
-      'les-py-1',
-      1,
-      1,
-      1,
-      1,
-      100.0,
-      1080.0, // 18 minutes watched
-      1.0,
-      1120,
-      '2026-09-09 14:20:00',
-      '2026-09-09 14:20:00'
-    ]
-  );
-
-  // Lesson 2 Completed (Article, fully read)
-  execute(
-    `INSERT OR REPLACE INTO lesson_progress (
-      id, user_id, student_id, lesson_id, is_completed, completed, content_completed, practice_completed,
-      progress_percentage, playback_position, read_position, time_spent_seconds, last_accessed_at, completed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'lp-py-2',
-      'usr-student-1',
-      'usr-student-1',
-      'les-py-2',
-      1,
-      1,
-      1,
-      1,
-      100.0,
-      0.0,
-      1.0, // 100% read
-      940,
-      '2026-09-10 16:45:00',
-      '2026-09-10 16:45:00'
-    ]
-  );
-
-  // Lesson 3 In-Progress at 65% (Operators)
-  execute(
-    `INSERT OR REPLACE INTO lesson_progress (
-      id, user_id, student_id, lesson_id, is_completed, completed, content_completed, practice_completed,
-      progress_percentage, playback_position, read_position, time_spent_seconds, last_accessed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'lp-py-3',
-      'usr-student-1',
-      'usr-student-1',
-      'les-py-3',
-      0,
-      0,
-      0,
-      0,
-      65.0, // 65% complete
-      0.0,
-      0.65,
-      540,
-      '2026-09-11 11:30:00'
-    ]
-  );
-
-  // Enroll in DSA as well (in progress)
-  execute(
-    `INSERT OR REPLACE INTO course_enrollments (
-      id, user_id, student_id, course_id, roadmap_id, status, progress_percentage, started_at, last_accessed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'enr-dsa-1',
-      'usr-student-1',
-      'usr-student-1',
-      'crs-dsa-101',
-      null,
-      'in_progress',
-      50.0,
-      '2026-09-05 09:00:00',
-      '2026-09-07 14:00:00'
-    ]
-  );
-
-  execute(
-    `INSERT OR REPLACE INTO lesson_progress (
-      id, user_id, student_id, lesson_id, is_completed, completed, content_completed, practice_completed,
-      progress_percentage, playback_position, read_position, time_spent_seconds, last_accessed_at, completed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    ['lp-dsa-1', 'usr-student-1', 'usr-student-1', 'les-dsa-1', 1, 1, 1, 1, 100.0, 0, 1.0, 950, '2026-09-06 11:00:00', '2026-09-06 11:00:00']
-  );
-
-  // SEED MEANINGFUL LEARNING ACTIVITIES
-  const initialActivities = [
-    {
-      id: 'act-1',
-      userId: 'usr-student-1',
-      activityType: 'course_started',
-      courseId: 'crs-py-201',
-      moduleId: 'mod-py-1',
-      lessonId: 'les-py-1',
-      title: 'Started Course: Python Programming Fundamentals',
-      duration: 0,
-      createdAt: '2026-09-08 10:00:00'
-    },
-    {
-      id: 'act-2',
-      userId: 'usr-student-1',
-      activityType: 'video_watched',
-      courseId: 'crs-py-201',
-      moduleId: 'mod-py-1',
-      lessonId: 'les-py-1',
-      title: 'Watched Video: Lesson 1 — Introduction to Python',
-      duration: 18 * 60,
-      createdAt: '2026-09-09 14:15:00'
-    },
-    {
-      id: 'act-3',
-      userId: 'usr-student-1',
-      activityType: 'lesson_completed',
-      courseId: 'crs-py-201',
-      moduleId: 'mod-py-1',
-      lessonId: 'les-py-1',
-      title: 'Completed Lesson 1: Introduction to Python',
-      duration: 18 * 60,
-      createdAt: '2026-09-09 14:20:00'
-    },
-    {
-      id: 'act-4',
-      userId: 'usr-student-1',
-      activityType: 'article_completed',
-      courseId: 'crs-py-201',
-      moduleId: 'mod-py-1',
-      lessonId: 'les-py-2',
-      title: 'Read Article: Lesson 2 — Variables and Data Types',
-      duration: 15 * 60,
-      createdAt: '2026-09-10 16:45:00'
-    },
-    {
-      id: 'act-5',
-      userId: 'usr-student-1',
-      activityType: 'lesson_progressed',
-      courseId: 'crs-py-201',
-      moduleId: 'mod-py-1',
-      lessonId: 'les-py-3',
-      title: 'Progressed on Lesson 3: Operators and Expressions (65%)',
-      duration: 9 * 60,
-      createdAt: '2026-09-11 11:30:00'
-    }
-  ];
-
-  for (const act of initialActivities) {
-    execute(
-      `INSERT OR REPLACE INTO learning_activities (
-        id, user_id, student_id, activity_type, course_id, module_id, lesson_id, title, duration, duration_minutes, created_at, completed_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        act.id,
-        act.userId,
-        act.userId,
-        act.activityType,
-        act.courseId,
-        act.moduleId,
-        act.lessonId,
-        act.title,
-        act.duration,
-        Math.round(act.duration / 60),
-        act.createdAt,
-        act.createdAt
-      ]
-    );
-  }
 
   // 4. (Step 9 Coding Problems are seeded comprehensively in Section 9 below)
 
@@ -1278,54 +1049,8 @@ export async function seedDatabase() {
     ]);
   }
 
-  // Seed sample completed attempt for usr-student-1 on mt-py-1 (Passed with 8/10, 80%)
-  execute(`
-    INSERT OR REPLACE INTO mock_test_attempts (
-      id, mock_test_id, student_id, attempt_number, started_at, submitted_at, time_taken_seconds,
-      status, total_marks, earned_marks, percentage, passed, suspicious_event_count, ai_feedback_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `, [
-    'atm-py-1',
-    'mt-py-1',
-    'usr-student-1',
-    1,
-    '2026-09-09 14:25:00',
-    '2026-09-09 14:35:00',
-    600,
-    'submitted',
-    10,
-    8.0,
-    80.0,
-    1,
-    0,
-    JSON.stringify({
-      strengths: ['Strong command of Python environment tools', 'Mastery of PEP 8 conventions'],
-      weakConcepts: ['Bytecode caching internals'],
-      commonMistakes: ['Rushing pip command flags'],
-      recommendedRevision: ['Review how CPython optimizes .pyc cache files'],
-      suggestedLesson: { id: 'les-py-1', title: 'Introduction to Python' },
-      nextDifficulty: 'medium',
-      motivationMessage: 'Outstanding start! You have a solid grasp of Python fundamentals.',
-      nextAction: 'Continue to Variables and Data Types.'
-    })
-  ]);
+  // Note: Mock test attempts and skill results are created as candidates take practice tests.
 
-  // Seed skill results for atm-py-1
-  execute(`
-    INSERT OR REPLACE INTO test_skill_results (
-      id, attempt_id, skill_id, earned_marks, maximum_marks, percentage, correct_count, incorrect_count, unanswered_count
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `, [
-    'tsr-py-1',
-    'atm-py-1',
-    'skl-py',
-    8.0,
-    10.0,
-    80.0,
-    4,
-    1,
-    0
-  ]);
 
   // ==========================================
   // 9. SEED STEP 9: CODING PRACTICE & AUTO-EVALUATION
@@ -1514,67 +1239,8 @@ export async function seedDatabase() {
     }
   }
 
-  // Seed initial Coding Streak & Activity for usr-student-1
-  const today = new Date().toISOString().split('T')[0];
-  const calendarHistory = [
-    { date: '2026-09-10', count: 2 },
-    { date: '2026-09-11', count: 3 },
-    { date: today, count: 1 }
-  ];
-  const badgesEarned = [
-    { id: 'b-streak-3', title: '🔥 3-Day Flame Streak', desc: 'Maintained consistency for 3 continuous coding days.' },
-    { id: 'b-first-solve', title: '⭐ First Breakthrough', desc: 'Submitted an accepted algorithmic solution with 100% test accuracy.' }
-  ];
+  // Note: Coding streaks and problem submissions are created genuinely as students solve challenges.
 
-  execute(
-    `INSERT OR REPLACE INTO coding_streaks (
-      id, student_id, current_streak, longest_streak, total_active_days,
-      last_activity_date, streak_calendar_json, badges_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'strk-usr-student-1',
-      'usr-student-1',
-      3,
-      7,
-      12,
-      today,
-      JSON.stringify(calendarHistory),
-      JSON.stringify(badgesEarned)
-    ]
-  );
-
-  // Seed a sample accepted submission for cp-1 for usr-student-1
-  execute(
-    `INSERT OR REPLACE INTO coding_submissions (
-      id, student_id, problem_id, language, source_code, status, score,
-      passed_test_cases, total_test_cases, execution_time_ms, memory_used_mb,
-      compiler_output, runtime_output, submitted_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'sub-seed-1',
-      'usr-student-1',
-      'cp-1',
-      'python',
-      `import sys\n\ndef solve():\n    data = sys.stdin.read().split()\n    if not data:\n        return\n    a = int(data[0])\n    b = int(data[1])\n    print(max(a, b))\n\nif __name__ == '__main__':\n    solve()`,
-      'ACCEPTED',
-      100.0,
-      4,
-      4,
-      48,
-      14.2,
-      null,
-      '20',
-      '2026-09-11 16:30:00'
-    ]
-  );
-
-  // Seed skill evidence for usr-student-1
-  execute(
-    `INSERT OR REPLACE INTO coding_skill_evidence (
-      id, student_id, problem_id, submission_id, skill_id, score, difficulty, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    ['cse-seed-1', 'usr-student-1', 'cp-1', 'sub-seed-1', 'skl-py', 100.0, 'easy', '2026-09-11 16:30:00']
-  );
 
   // =========================================================================
   // 13. SEED STEP 10: COMMUNICATION AND LANGUAGE LEARNING SYSTEM
@@ -2147,201 +1813,11 @@ export async function seedDatabase() {
     );
   }
 
-  // 13.4 Communication Streak & Badge Seed for usr-student-1
-  const commCalendarHistory = [
-    { date: '2026-09-09', count: 1 },
-    { date: '2026-09-10', count: 2 },
-    { date: '2026-09-11', count: 3 },
-    { date: today, count: 1 }
-  ];
-  const commBadgesEarned = [
-    { id: 'b-comm-3', title: '🗣️ Fluent Voice', desc: 'Maintained 3 consecutive days of speaking and conversation practice.' },
-    { id: 'b-vocab-master', title: '📚 Vocabulary Pro', desc: 'Mastered high-frequency technical and placement terms.' }
-  ];
-
-  execute(
-    `INSERT OR REPLACE INTO communication_streaks (
-      id, student_id, user_id, current_streak, longest_streak, total_active_days,
-      last_activity_date, streak_calendar_json, badges_json
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'cstrk-usr-student-1',
-      'usr-student-1',
-      'usr-student-1',
-      4,
-      8,
-      14,
-      today,
-      JSON.stringify(commCalendarHistory),
-      JSON.stringify(commBadgesEarned)
-    ]
-  );
-
-  // 13.5 Seed baseline diagnostic assessment for usr-student-1 in English
-  execute(
-    `INSERT OR REPLACE INTO communication_assessments (
-      id, student_id, language_id, assessment_type, overall_score,
-      speaking_score, listening_score, reading_score, writing_score,
-      grammar_score, vocabulary_score, pronunciation_score, conversation_score,
-      level, level_name, ai_evaluation_json, questions_json, answers_json,
-      status, completed_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-    [
-      'comm-asmt-en-init',
-      'usr-student-1',
-      'lang-en',
-      'DIAGNOSTIC_BASELINE',
-      72.5,
-      70.0, 78.0, 80.0, 72.0, 74.0, 75.0, 68.0, 69.0,
-      3,
-      'Level 3 — Developing',
-      JSON.stringify({
-        summary: 'Solid foundational and developing proficiency with strong reading and listening comprehension. Speaking fluency and spontaneous conversation need focused refinement.',
-        strengths: [
-          'High grammatical accuracy in technical descriptions',
-          'Good vocabulary retention for software engineering terms',
-          'Strong comprehension of complex written requirements'
-        ],
-        growthAreas: [
-          'Reduce hesitation pauses during spontaneous conversational follow-ups',
-          'Refine pronunciation and intonation on polysyllabic terminology',
-          'Increase confidence in answering behavioral STAR questions'
-        ],
-        recommendations: [
-          'Practice 15 minutes of AI conversation in Placement Mode daily',
-          'Review the STAR Method lesson before technical interview simulations',
-          'Record voice responses to improve pronunciation clarity'
-        ]
-      }),
-      '[]',
-      '[]',
-      'completed'
-    ]
-  );
-
-  // 13.6 Seed sub-skill results for English
-  const enSubSkills = [
-    { skillId: 'skl-en', category: 'speaking', score: 70.0 },
-    { skillId: 'skl-en', category: 'listening', score: 78.0 },
-    { skillId: 'skl-en', category: 'reading', score: 80.0 },
-    { skillId: 'skl-en', category: 'writing', score: 72.0 },
-    { skillId: 'skl-en', category: 'grammar', score: 74.0 },
-    { skillId: 'skl-en', category: 'vocabulary', score: 75.0 },
-    { skillId: 'skl-en', category: 'pronunciation', score: 68.0 },
-    { skillId: 'skl-en', category: 'conversation', score: 69.0 }
-  ];
-
-  for (let i = 0; i < enSubSkills.length; i++) {
-    const ss = enSubSkills[i];
-    execute(
-      `INSERT OR REPLACE INTO communication_skill_results (
-        id, assessment_id, student_id, skill_id, category, score, confidence
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [`csr-en-${i + 1}`, 'comm-asmt-en-init', 'usr-student-1', ss.skillId, ss.category, ss.score, 'High']
-    );
-  }
-
-  // 13.7 Seed initial conversation session
-  execute(
-    `INSERT OR REPLACE INTO conversation_sessions (
-      id, student_id, language_id, mode, topic, difficulty,
-      total_messages, duration_seconds, overall_score, feedback_json, status, started_at, ended_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-    [
-      'conv-sess-1',
-      'usr-student-1',
-      'lang-en',
-      'placement',
-      'Technical Self-Introduction & Project Deep-Dive',
-      'medium',
-      4,
-      480,
-      74.0,
-      JSON.stringify({
-        overallFeedback: 'Clear explanation of technical projects. Minor grammatical errors when switching between past and present tenses.',
-        strengths: ['Great articulation of system architecture', 'Kept answers concise and structured'],
-        improvements: ['Watch subject-verb agreement under pressure', 'Expand vocabulary when describing edge-case handling']
-      }),
-      'completed'
-    ]
-  );
-
-  // 13.8 Seed sample conversation turns for session 1
-  const sampleTurns = [
-    {
-      id: 'turn-1',
-      sender: 'ai',
-      text: "Hello Alex! Welcome to your Placement Interview Practice. Could you start by introducing yourself and highlighting your primary technical stack?",
-      relevance: 100,
-      grammarCorrection: null,
-      vocabularyNote: null
-    },
-    {
-      id: 'turn-2',
-      sender: 'student',
-      text: "Hi! My name is Alex and I study Computer Science. I specialize in backend systems using Node.js, Python, and PostgreSQL.",
-      relevance: 95,
-      grammarCorrection: "Clear and direct sentence construction.",
-      vocabularyNote: "Good usage of 'specialize in'."
-    },
-    {
-      id: 'turn-3',
-      sender: 'ai',
-      text: "That's great, Alex. Tell me about a challenging backend bug or scaling bottleneck you encountered recently and how you resolved it.",
-      relevance: 100,
-      grammarCorrection: null,
-      vocabularyNote: null
-    },
-    {
-      id: 'turn-4',
-      sender: 'student',
-      text: "In my recent project, we had high latency when multiple users queried the search API. I investigated the logs, found unindexed foreign keys, and added B-tree indices which decreased response times by 60%.",
-      relevance: 98,
-      grammarCorrection: "Accurate use of past tense verbs ('investigated', 'found', 'decreased').",
-      vocabularyNote: "Excellent technical precision ('unindexed foreign keys', 'B-tree indices')."
-    }
-  ];
-
-  for (const t of sampleTurns) {
-    execute(
-      `INSERT OR REPLACE INTO conversation_session_messages (
-        id, session_id, sender, message_text, transcript_reference, grammar_correction, vocabulary_note, relevance_score
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [t.id, 'conv-sess-1', t.sender, t.text, null, t.grammarCorrection, t.vocabularyNote, t.relevance]
-    );
-  }
-
-  // 13.9 Seed sample writing response for usr-student-1
-  execute(
-    `INSERT OR REPLACE INTO writing_responses (
-      id, student_id, language_id, activity_id, prompt, answer,
-      word_count, overall_score, grammar_score, vocabulary_score,
-      clarity_score, ai_feedback_json, suggested_answer
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      'wr-seed-1',
-      'usr-student-1',
-      'lang-en',
-      null,
-      'Draft an email to your engineering lead explaining that a production API deployment is causing 502 errors and outlining your rollback plan.',
-      'Hi team, the new deployment from today has 502 error for users who checkout. We think the db pool is full. We are going to rollback to the last version in 10 minutes and check logs. Please let me know if you have questions.',
-      43,
-      74.5,
-      72.0,
-      70.0,
-      76.0,
-      JSON.stringify({
-        overview: 'Good sense of urgency and direct explanation. Can be enhanced with formal incident terminology and BLUF structure.',
-        grammarNotes: ['"has 502 error" -> "is returning 502 Bad Gateway errors"', '"in 10 minutes" -> specify exact timestamps for team clarity.'],
-        vocabularySuggestions: ['Use "initiated a rollback" instead of "going to rollback".', 'Use "database connection pool exhaustion" instead of "db pool is full".']
-      }),
-      'Hi Lead and Engineering Team,\n\nBLUF: We are initiating an immediate rollback of Release v2.4.1 due to elevated 502 Bad Gateway errors observed on the checkout endpoint.\n\nPreliminary Root Cause: Database connection pool exhaustion under sustained concurrency.\nImpact: Approximately 4% of customer checkout requests failed over the past 15 minutes.\nAction Plan:\n1. Alex to execute rollback to v2.4.0 by 14:25 UTC.\n2. Engineering to review pool sizing configurations prior to redeployment.\n\nBest regards,\nAlex Rivera'
-    ]
-  );
-
   // ==========================================================================
+
   // 14. SEED STEP 11: OPPORTUNITY MARKETPLACE
   // ==========================================================================
+
   console.log('[Seed] Seeding Step 11 Opportunity Marketplace...');
 
   const now = new Date();
@@ -2993,207 +2469,8 @@ export async function seedDatabase() {
   const matchSummary = recalculateStudentMatches('usr-student-1');
   console.log(`[Seed] Step 12 AI Matching pre-calculated: Best match ${matchSummary.bestMatch}%, ${matchSummary.eligibleCount} eligible opportunities.`);
 
-  // -------------------------------------------------------------
-  // Step 13: Seed Mock Interview Sessions & Answers
-  // -------------------------------------------------------------
-  execute(
-    `INSERT OR REPLACE INTO mock_interviews (
-      id, student_id, interview_type, target_role, difficulty, mode, question_count, duration,
-      status, overall_score, technical_score, communication_score, hr_score, problem_solving_score,
-      questions_attempted, questions_skipped, started_at, completed_at, strengths_json, weaknesses_json,
-      feedback_summary, recommended_courses_json, recommended_coding_json, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-    [
-      'mock-int-seed-1',
-      'usr-student-1',
-      'TECHNICAL',
-      'Python Developer',
-      'INTERMEDIATE',
-      'TEXT',
-      5,
-      15,
-      'COMPLETED',
-      84.0,
-      86.0,
-      82.0,
-      80.0,
-      88.0,
-      5,
-      0,
-      '2026-09-13 14:00:00',
-      '2026-09-13 14:14:32',
-      JSON.stringify(['Strong knowledge of Python memory management', 'Clear understanding of indexing in relational databases', 'Articulate problem-solving structure']),
-      JSON.stringify(['Could provide more concrete latency profiling examples', 'Explain cyclic garbage collection thresholds with more detail']),
-      'Overall strong performance showing solid foundational knowledge of Python runtime and backend design principles. Ready for junior to mid-level engineering interviews.',
-      JSON.stringify(['crs-python-advanced', 'crs-db-systems']),
-      JSON.stringify(['cp-1', 'cp-2'])
-    ]
-  );
+  // Note: Mock interviews and feedback are conducted dynamically by students using the AI Mock Interview system.
 
-  // Questions for mock-int-seed-1
-  const questionsData = [
-    {
-      id: 'iq-1',
-      text: 'Explain how Python manages memory, specifically focusing on reference counting and garbage collection cycles.',
-      type: 'TECHNICAL',
-      seq: 1,
-      isFollowUp: 0,
-      parentId: null
-    },
-    {
-      id: 'iq-1-fu',
-      text: 'How does the cyclic garbage collector detect reference cycles between two objects when their reference count never drops to zero?',
-      type: 'TECHNICAL',
-      seq: 2,
-      isFollowUp: 1,
-      parentId: 'iq-1'
-    },
-    {
-      id: 'iq-2',
-      text: 'What is the Global Interpreter Lock (GIL) in CPython, and how does it impact CPU-bound versus I/O-bound multithreaded applications?',
-      type: 'TECHNICAL',
-      seq: 3,
-      isFollowUp: 0,
-      parentId: null
-    },
-    {
-      id: 'iq-3',
-      text: 'How would you diagnose and optimize a database query in a REST API that has a high response latency?',
-      type: 'PROBLEM_SOLVING',
-      seq: 4,
-      isFollowUp: 0,
-      parentId: null
-    },
-    {
-      id: 'iq-4',
-      text: 'Describe a challenging bug you encountered in a recent project and the structured debugging process you used to resolve it.',
-      type: 'PROJECT_EXPLANATION',
-      seq: 5,
-      isFollowUp: 0,
-      parentId: null
-    }
-  ];
-
-  for (const q of questionsData) {
-    execute(
-      `INSERT OR REPLACE INTO interview_questions (
-        id, interview_id, question_id, question_text, question_type, sequence_number, is_follow_up, parent_question_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [q.id, 'mock-int-seed-1', q.id, q.text, q.type, q.seq, q.isFollowUp, q.parentId]
-    );
-  }
-
-  // Answers for mock-int-seed-1
-  const answersData = [
-    {
-      id: 'ans-1',
-      qId: 'iq-1',
-      text: 'Python uses reference counting as its primary memory management mechanism. Every object has an ob_refcnt field tracking references. When the count reaches 0, the memory is immediately deallocated. In addition, CPython uses a generational cyclic garbage collector with three generations to collect circular references.',
-      score: 88.0,
-      techScore: 90.0,
-      commScore: 86.0,
-      hrScore: 85.0,
-      probScore: 88.0,
-      feedback: 'Very clear explanation of reference counting and generational garbage collection.',
-      strengths: ['Accurate explanation of ob_refcnt', 'Mentioned generational garbage collection'],
-      weaknesses: ['Could mention gc module flags or generation thresholds'],
-      missingPoints: ['Generation 0, 1, 2 threshold triggers'],
-      structure: 'Direct Answer -> Mechanism Detail -> Generational GC',
-      advice: 'Mention how weakref can also help avoid reference cycles.'
-    },
-    {
-      id: 'ans-1-fu',
-      qId: 'iq-1-fu',
-      text: 'The cyclic garbage collector groups objects into generations and tracks pointers between container objects. It finds unreachable cycles by simulating decrements on reference counts within isolated reference graphs; if an isolated group has no external references pointing in, it is identified as garbage.',
-      score: 87.0,
-      techScore: 89.0,
-      commScore: 85.0,
-      hrScore: 84.0,
-      probScore: 88.0,
-      feedback: 'Demonstrated deep conceptual comprehension of the reachability graph algorithm.',
-      strengths: ['Container object identification', 'External pointer deduction model'],
-      weaknesses: ['Could briefly mention finalizers (__del__) interaction'],
-      missingPoints: ['__del__ finalizer considerations in older Python versions'],
-      structure: 'Graph Approach -> Reference Decrement Simulation -> Collection',
-      advice: 'Excellent follow-up answer.'
-    },
-    {
-      id: 'ans-2',
-      qId: 'iq-2',
-      text: 'The GIL is a mutex that protects access to Python objects, preventing multiple native threads from executing Python bytecodes simultaneously. For CPU-bound tasks, multithreading does not provide true parallelism because threads wait on the GIL mutex; multiprocessing should be used instead. For I/O-bound tasks, threads release the GIL during blocking operations like network requests or file reads, making multithreading effective.',
-      score: 86.0,
-      techScore: 88.0,
-      commScore: 84.0,
-      hrScore: 82.0,
-      probScore: 86.0,
-      feedback: 'Accurately articulated the distinction between CPU-bound and I/O-bound workloads under the GIL.',
-      strengths: ['Correct distinction between CPU and I/O workloads', 'Recommended multiprocessing as the alternative'],
-      weaknesses: ['Could mention Python 3.12/3.13 free-threaded Python experiments (PEP 703)'],
-      missingPoints: ['PEP 703 sub-interpreters or free-threading'],
-      structure: 'Definition -> CPU Bound Impact -> I/O Bound Impact -> Alternative Solution',
-      advice: 'Strong technical explanation.'
-    },
-    {
-      id: 'ans-3',
-      qId: 'iq-3',
-      text: 'First, I analyze database slow query logs and use EXPLAIN ANALYZE on PostgreSQL or MySQL to examine the execution plan. I check for missing indexes on filter/foreign key columns, N+1 query patterns in ORM code, and table scans. Then I add appropriate B-Tree composite indexes, rewrite JOINs, paginate large result sets, and implement Redis caching for frequently read, low-mutation endpoints.',
-      score: 85.0,
-      techScore: 86.0,
-      commScore: 84.0,
-      hrScore: 82.0,
-      probScore: 88.0,
-      feedback: 'Practical, production-grade optimization strategy covering profiling, schema indexing, and caching.',
-      strengths: ['EXPLAIN ANALYZE workflow', 'Identified ORM N+1 anti-pattern', 'Proposed Redis caching'],
-      weaknesses: ['Could mention connection pooling or database replica reads'],
-      missingPoints: ['Read replicas or connection pooling'],
-      structure: 'Diagnosis -> Execution Plan -> Indexing & Query Optimization -> Caching',
-      advice: 'Very solid engineering approach.'
-    },
-    {
-      id: 'ans-4',
-      qId: 'iq-4',
-      text: 'In our inventory tracker, we had an intermittent concurrency bug where stock levels went negative under load. I reproduced the bug using an automated Locust load test script. Inspecting the code revealed a race condition between reading the stock count and updating it without transactional locking. I resolved this by wrapping the operation in an ACID transaction with SELECT FOR UPDATE row-level locking, and added automated concurrency tests to prevent regression.',
-      score: 84.0,
-      techScore: 85.0,
-      commScore: 83.0,
-      hrScore: 84.0,
-      probScore: 86.0,
-      feedback: 'Demonstrated real-world debugging discipline and solid database transaction fundamentals.',
-      strengths: ['Automated reproduction with Locust', 'Correct concurrency fix using SELECT FOR UPDATE'],
-      weaknesses: ['Could mention optimistic concurrency control using version numbers as an alternative'],
-      missingPoints: ['Optimistic locking trade-offs'],
-      structure: 'Context -> Reproduction -> Root Cause Analysis -> Implementation & Prevention',
-      advice: 'High-quality STAR story.'
-    }
-  ];
-
-  for (const a of answersData) {
-    execute(
-      `INSERT OR REPLACE INTO interview_answers (
-        id, interview_id, question_id, student_id, answer_text, score, technical_score,
-        communication_score, hr_score, problem_solving_score, feedback, strengths_json,
-        weaknesses_json, missing_points_json, suggested_structure, improvement_advice, submitted_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-      [
-        a.id,
-        'mock-int-seed-1',
-        a.qId,
-        'usr-student-1',
-        a.text,
-        a.score,
-        a.techScore,
-        a.commScore,
-        a.hrScore,
-        a.probScore,
-        a.feedback,
-        JSON.stringify(a.strengths),
-        JSON.stringify(a.weaknesses),
-        JSON.stringify(a.missingPoints),
-        a.structure,
-        a.advice
-      ]
-    );
-  }
 
   // -------------------------------------------------------------
   // Step 14: Seed Mentorship Requests, Sessions & Feedback
@@ -3281,37 +2558,7 @@ export async function seedDatabase() {
     ['priv-seed-1', 'usr-student-1', 1, 1, 1, 1, 1, 0]
   );
 
-  // -------------------------------------------------------------
-  // Step 15: Seed Candidate Applications & Recruiter Interviews
-  // -------------------------------------------------------------
-  execute(
-    `INSERT OR REPLACE INTO opportunity_applications (
-      id, student_id, opportunity_id, status, applied_at, notes, application_reference
-    ) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)`,
-    ['opp-app-1', 'usr-student-1', 'opp-1', 'SHORTLISTED', 'Applied via SkillBridge Marketplace', 'APP-2026-SB-001']
-  );
-
-  execute(
-    `INSERT OR REPLACE INTO recruiter_interviews (
-      id, recruiter_id, candidate_id, opportunity_id, application_id, interview_type,
-      scheduled_date, scheduled_time, duration_minutes, meeting_link, instructions, status, notes, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-    [
-      'rec-int-seed-1',
-      'usr-recruiter-1',
-      'usr-student-1',
-      'opp-1',
-      'opp-app-1',
-      'TECHNICAL',
-      '2026-09-25',
-      '14:30',
-      45,
-      'https://meet.skillbridge.ai/alphascale-tech-round',
-      'Please have your preferred code editor ready and be prepared for a 30-minute system design discussion.',
-      'SCHEDULED',
-      'Candidate demonstrated top 10% coding performance and strong Python/SQL match score.'
-    ]
-  );
+  // Note: Student applications and recruiter interviews are initiated genuinely as opportunities are explored.
 
   // -------------------------------------------------------------
   // Step 17: Seed Notification Preferences & In-App Notifications
@@ -3326,41 +2573,15 @@ export async function seedDatabase() {
 
   const notificationsToSeed = [
     {
-      id: 'notif-seed-1',
+      id: 'notif-seed-welcome',
       userId: 'usr-student-1',
-      title: 'Technical Interview Scheduled',
-      message: 'AlphaScale Labs has scheduled your Technical Interview for Python Backend Engineer Intern on Sep 25, 2026 at 2:30 PM.',
-      type: 'INTERVIEW_SCHEDULED',
-      relId: 'rec-int-seed-1',
+      title: 'Welcome to SkillBridge AI! 🚀',
+      message: 'Get started by taking your AI Baseline Assessment to establish your skill matrix and unlock personalized learning.',
+      type: 'SYSTEM_ANNOUNCEMENT',
+      relId: 'assessment',
       isRead: 0
     },
-    {
-      id: 'notif-seed-2',
-      userId: 'usr-student-1',
-      title: 'Mentorship Session Confirmed',
-      message: 'Dr. Rajesh Kumar confirmed your mentorship session on Backend Architecture for Sep 22, 2026 at 5:00 PM.',
-      type: 'MENTOR_SESSION',
-      relId: 'msess-seed-1',
-      isRead: 0
-    },
-    {
-      id: 'notif-seed-3',
-      userId: 'usr-student-1',
-      title: 'New High-Match Opportunity',
-      message: 'AI Matching identified a 77% match for "Automated Test Software Intern" at AlphaScale Labs.',
-      type: 'MATCHED_OPPORTUNITY',
-      relId: 'opp-47efae29',
-      isRead: 1
-    },
-    {
-      id: 'notif-seed-4',
-      userId: 'usr-student-1',
-      title: 'Course Learning Streak',
-      message: 'You are on a 12-day coding streak! Complete your daily coding challenge to reach 13 days.',
-      type: 'COURSE_REMINDER',
-      relId: 'crs-python-advanced',
-      isRead: 1
-    },
+
     {
       id: 'notif-seed-5',
       userId: 'usr-mentor-1',

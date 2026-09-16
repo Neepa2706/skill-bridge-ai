@@ -37,6 +37,39 @@ export const SafeExamView: React.FC<SafeExamViewProps> = ({
   const [timeLeft, setTimeLeft] = useState<number>(durationMinutes * 60);
   const [violationsCount, setViolationsCount] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSEB, setIsSEB] = useState<boolean>(() => {
+    return navigator.userAgent.includes('SEB/') || navigator.userAgent.includes('SafeExamBrowser');
+  });
+
+  // Verify SEB Client Status with Server
+  useEffect(() => {
+    fetch('/api/assessment/seb-status')
+      .then(res => res.json())
+      .then(data => {
+        if (data.isSEB) {
+          setIsSEB(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fullscreen Lockdown Enforcement
+  useEffect(() => {
+    if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {
+        // User interaction may be required before fullscreen
+      });
+    }
+
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        logViolation('fullscreen_exit', 'Fullscreen lockdown exited. Assessment integrity requires full screen.');
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // Timer countdown
   useEffect(() => {
@@ -54,7 +87,7 @@ export const SafeExamView: React.FC<SafeExamViewProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Safe Exam Proctoring Listeners (Tab switch, Blur, Copy-Paste)
+  // Safe Exam Browser (SEB) Lockdown Listeners (Tab switch, Blur, Copy-Paste, Shortcut suppression)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -68,21 +101,46 @@ export const SafeExamView: React.FC<SafeExamViewProps> = ({
 
     const handleCopyPaste = (e: ClipboardEvent) => {
       e.preventDefault();
-      logViolation('copy_paste_attempt', 'Attempted clipboard copy or paste during safe exam');
+      logViolation('copy_paste_attempt', 'Attempted clipboard copy/paste during safe exam');
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Suppress developer tools, inspect, print, refresh, save, and exit keys
+      if (
+        e.key === 'F11' ||
+        e.key === 'F12' ||
+        e.key === 'Escape' ||
+        (e.ctrlKey && ['c', 'v', 'u', 'p', 's', 'r', 'a'].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && ['i', 'j', 'c', 'k'].includes(e.key.toLowerCase())) ||
+        (e.altKey && e.key === 'Tab')
+      ) {
+        e.preventDefault();
+        logViolation('restricted_shortcut', `Restricted key combination blocked: ${e.key}`);
+      }
+    };
+
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+      logViolation('right_click_attempt', 'Right-click context menu access disabled during safe exam');
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('blur', handleWindowBlur);
     document.addEventListener('copy', handleCopyPaste);
     document.addEventListener('paste', handleCopyPaste);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('contextmenu', handleContextMenu);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleWindowBlur);
       document.removeEventListener('copy', handleCopyPaste);
       document.removeEventListener('paste', handleCopyPaste);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('contextmenu', handleContextMenu);
     };
   }, [attemptId]);
+
 
   const logViolation = async (type: string, details: string) => {
     setViolationsCount(prev => prev + 1);
@@ -162,13 +220,45 @@ export const SafeExamView: React.FC<SafeExamViewProps> = ({
     <div className="safe-exam-container">
       {/* Header Bar */}
       <div className="proctor-hud-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShieldCheck size={20} color="var(--primary)" />
             <span style={{ fontWeight: 800, fontSize: '16px' }}>SAFE EXAM ENVIRONMENT</span>
           </div>
           <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{title}</span>
+
+          {/* SEB Status Pill */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 12px',
+              borderRadius: 'var(--radius-full)',
+              background: isSEB ? 'hsla(158, 64%, 52%, 0.15)' : 'hsla(217, 91%, 60%, 0.15)',
+              border: `1px solid ${isSEB ? 'var(--accent-emerald)' : 'var(--accent-cyan)'}`,
+              fontSize: '11px',
+              fontWeight: 700,
+              color: isSEB ? 'var(--accent-emerald)' : 'var(--accent-cyan)'
+            }}
+            id="seb-status-pill"
+          >
+            <span style={{ fontSize: '12px' }}>{isSEB ? '🛡️' : '🔒'}</span>
+            <span>{isSEB ? 'Safe Exam Browser (SEB) Active' : 'In-Browser SEB Lockdown Active'}</span>
+          </div>
+
+          <a
+            href="/api/assessment/seb-config"
+            download="SkillBridge-Assessment.seb"
+            className="btn btn-outline btn-sm"
+            style={{ fontSize: '11px', padding: '4px 10px', textDecoration: 'none' }}
+            title="Download Safe Exam Browser (.seb) Configuration file"
+            id="download-seb-config-btn"
+          >
+            Download .seb
+          </a>
         </div>
+
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {/* Timer Display */}
