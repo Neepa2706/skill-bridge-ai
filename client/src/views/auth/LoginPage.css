@@ -526,6 +526,213 @@
   transform: translateY(-1px);
 }
 
+/* ==================================================== */
+/* ⚡ INSTANT 1-CLICK ACCESS CONTAINER                   */
+/* ==================================================== */
+.instant-access-container {
+  background: linear-gradient(135deg, hsla(265, 89%, 66%, 0.12) 0%, hsla(210, 95%, 55%, 0.08) 100%);
+  border: 1px solid hsla(265, 89%, 66%, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 30px hsla(265, 89%, 66%, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.instant-access-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a855f7, #3b82f6, #06b6d4, #10b981);
+}
+
+.instant-access-header {
+  margin-bottom: 12px;
+}
+
+.instant-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  background: hsla(265, 89%, 66%, 0.25);
+  border: 1px solid hsla(265, 89%, 66%, 0.5);
+  color: #d8b4fe;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sparkle-pulse {
+  animation: pulse 1.8s infinite;
+  color: #facc15;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.instant-subtext {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.instant-primary-launch-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 16px hsla(265, 89%, 66%, 0.35);
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+}
+
+.instant-primary-launch-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px hsla(265, 89%, 66%, 0.5);
+  background: linear-gradient(135deg, #6d28d9 0%, #1d4ed8 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.instant-primary-launch-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.launch-icon-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
+}
+
+.launch-text-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.launch-main-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.launch-sub-title {
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 400;
+}
+
+.launch-arrow {
+  color: rgba(255, 255, 255, 0.85);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.instant-primary-launch-btn:hover .launch-arrow {
+  transform: translateX(4px);
+  color: #ffffff;
+}
+
+/* Secondary quick role pills tray */
+.quick-roles-tray {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid hsla(217, 25%, 28%, 0.35);
+}
+
+.tray-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.tray-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.tray-role-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: hsla(222, 47%, 11%, 0.6);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.tray-role-btn:hover:not(:disabled) {
+  background: hsla(265, 89%, 66%, 0.2);
+  border-color: var(--primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.tray-role-btn:disabled,
+.instant-primary-launch-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.manual-auth-divider {
+  margin: 18px 0 14px 0;
+}
+
+.autofill-demo-wrapper {
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.autofill-demo-badge {
+  background: hsla(222, 47%, 14%, 0.8);
+  border: 1px dashed hsla(265, 89%, 66%, 0.45);
+  color: #c084fc;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.autofill-demo-badge:hover {
+  background: hsla(265, 89%, 66%, 0.15);
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
 /* Error Banner */
 .auth-error-banner {
   padding: 12px 14px;

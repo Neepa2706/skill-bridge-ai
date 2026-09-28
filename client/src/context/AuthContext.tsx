@@ -17,6 +17,7 @@ interface AuthContextType {
   oauthError: string | null;
   clearOAuthError: () => void;
   login: (email: string, password: string) => Promise<User>;
+  quickLogin: (role?: string) => Promise<User>;
   register: (data: any) => Promise<RegisterResponse>;
   registerStudent: (data: any) => Promise<RegisterResponse>;
   registerCollege: (data: any) => Promise<RegisterResponse>;
@@ -88,6 +89,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
+    const demoParam = urlParams.get('demo') || urlParams.get('quick') || urlParams.get('role');
+    if (demoParam) {
+      const targetRole = ['student', 'recruiter', 'mentor', 'college', 'admin'].includes(demoParam)
+        ? demoParam
+        : 'student';
+      window.history.replaceState({}, document.title, window.location.pathname);
+      quickLogin(targetRole);
+      return;
+    }
+
     // 2. Validate existing token from localStorage
     if (token) {
       fetchCurrentUser(token);
@@ -107,6 +118,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Authentication failed. Please verify your credentials.');
+      }
+
+      localStorage.setItem('sb_token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+      await fetchCurrentUser(data.token);
+      return data.user;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const quickLogin = async (role: string = 'student'): Promise<User> => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/quick-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Quick login failed.');
       }
 
       localStorage.setItem('sb_token', data.token);
@@ -255,6 +289,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         oauthError,
         clearOAuthError,
         login,
+        quickLogin,
         register: registerStudent,
         registerStudent,
         registerCollege,

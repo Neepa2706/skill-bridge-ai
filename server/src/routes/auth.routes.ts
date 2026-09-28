@@ -1043,14 +1043,66 @@ router.post('/logout', (req: Request, res: Response): void => {
 });
 
 // ==========================================
-// 13. DEMO ROLE SWITCH (DISABLED)
+// 13. QUICK LOGIN & ROLE ACCESS (Instant App Entry)
 // ==========================================
-router.post('/demo-switch', (_req: Request, res: Response): void => {
-  res.status(403).json({
-    error: 'Demo role switching has been permanently disabled. Please register or sign in with real user credentials.',
-    code: 'DEMO_DISABLED'
-  });
-});
+const handleQuickLogin = (req: Request, res: Response): void => {
+  try {
+    const { role = 'student' } = req.body;
+    let targetEmail = 'student@skillbridge.ai';
+
+    if (role === 'recruiter') targetEmail = 'recruiter@skillbridge.ai';
+    else if (role === 'mentor') targetEmail = 'mentor@skillbridge.ai';
+    else if (role === 'college') targetEmail = 'college@skillbridge.ai';
+    else if (role === 'admin') targetEmail = 'admin@skillbridge.ai';
+    else if (role === 'student') targetEmail = 'student@skillbridge.ai';
+
+    let user = queryOne('SELECT * FROM users WHERE LOWER(email) = ?', [targetEmail]);
+    if (!user) {
+      user = queryOne('SELECT * FROM users WHERE role = ? LIMIT 1', [role]);
+    }
+    if (!user) {
+      user = queryOne('SELECT * FROM users WHERE role = ? LIMIT 1', ['student']) || queryOne('SELECT * FROM users LIMIT 1');
+    }
+
+    if (!user) {
+      res.status(404).json({ error: 'No account available for quick login.' });
+      return;
+    }
+
+    execute("UPDATE users SET last_login = datetime('now'), updated_at = datetime('now') WHERE id = ?", [user.id]);
+
+    const userObj = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      avatar_url: user.avatar_url,
+      phone: user.phone,
+      auth_provider: user.auth_provider || 'email',
+      email_verified: 1,
+      account_status: 'active',
+      profile_completed: 1
+    };
+
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
+    });
+
+    res.json({
+      message: `Quick login successful as ${user.name} (${user.role}).`,
+      token,
+      user: userObj
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Quick login failed.' });
+  }
+};
+
+router.post('/quick-login', handleQuickLogin);
+router.post('/demo-switch', handleQuickLogin);
 
 // ==========================================
 // 13B. DEV DATABASE RESET (Dev-only endpoint)

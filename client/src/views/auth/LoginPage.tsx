@@ -27,7 +27,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateToRegister }) => {
-  const { login, oauthError, clearOAuthError } = useAuth();
+  const { login, quickLogin, oauthError, clearOAuthError } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,6 +43,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
   // Modal Dialogs
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+  const handleQuickAccess = async (targetRole: string = 'student') => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setAuthError(null);
+    clearOAuthError();
+    try {
+      const authenticatedUser = await quickLogin(targetRole);
+      setIsSuccess(true);
+      if (onLoginSuccess) {
+        onLoginSuccess(authenticatedUser.role);
+      }
+    } catch (err: any) {
+      setAuthError(err.message || 'Quick access failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Email format regex
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -258,6 +276,108 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
                 <span>Authentication confirmed! Launching your portal...</span>
               </div>
             )}
+
+            {/* ==================================================== */}
+            {/* ⚡ INSTANT 1-CLICK APP ACCESS (BYPASS LOGIN)         */}
+            {/* ==================================================== */}
+            <div className="instant-access-container">
+              <div className="instant-access-header">
+                <div className="instant-badge">
+                  <Sparkles size={14} className="sparkle-pulse" />
+                  <span>DIRECT ACCESS • NO REGISTRATION NEEDED</span>
+                </div>
+                <p className="instant-subtext">Click below to enter the full interactive application instantly:</p>
+              </div>
+
+              {/* Primary Instant Student Launch Button */}
+              <button
+                type="button"
+                id="btn-instant-student"
+                className="instant-primary-launch-btn"
+                onClick={() => handleQuickAccess('student')}
+                disabled={isSubmitting || isSuccess}
+              >
+                <div className="launch-icon-wrapper">
+                  <GraduationCap size={22} />
+                </div>
+                <div className="launch-text-content">
+                  <span className="launch-main-title">🚀 Enter App as Student (Instant Access)</span>
+                  <span className="launch-sub-title">Live Camera HUD • Multi-Lang Coding • Voice Fluency Test</span>
+                </div>
+                <ArrowRight size={20} className="launch-arrow" />
+              </button>
+
+              {/* Secondary Instant Roles */}
+              <div className="quick-roles-tray">
+                <div className="tray-label">Or explore other stakeholders:</div>
+                <div className="tray-buttons">
+                  <button
+                    type="button"
+                    className="tray-role-btn recruiter"
+                    onClick={() => handleQuickAccess('recruiter')}
+                    disabled={isSubmitting || isSuccess}
+                    title="Recruiter: Candidate matching & hiring pipeline"
+                  >
+                    <Building2 size={13} />
+                    <span>Recruiter</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="tray-role-btn mentor"
+                    onClick={() => handleQuickAccess('mentor')}
+                    disabled={isSubmitting || isSuccess}
+                    title="Mentor: 1-on-1 mentorship & mock interviews"
+                  >
+                    <Award size={13} />
+                    <span>Mentor</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="tray-role-btn college"
+                    onClick={() => handleQuickAccess('college')}
+                    disabled={isSubmitting || isSuccess}
+                    title="College TPO: Placement drives & cohort stats"
+                  >
+                    <GraduationCap size={13} />
+                    <span>College TPO</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="tray-role-btn admin"
+                    onClick={() => handleQuickAccess('admin')}
+                    disabled={isSubmitting || isSuccess}
+                    title="Admin: Global governance & platform control"
+                  >
+                    <ShieldCheck size={13} />
+                    <span>Admin</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* OR SIGN IN WITH CREDENTIALS */}
+            <div className="or-divider manual-auth-divider">
+              <div className="or-line"></div>
+              <span className="or-text">OR SIGN IN MANUALLY</span>
+              <div className="or-line"></div>
+            </div>
+
+            {/* Demo Credential Quick-Fill Pill */}
+            <div className="autofill-demo-wrapper">
+              <button
+                type="button"
+                className="autofill-demo-badge"
+                onClick={() => {
+                  setEmail('student@skillbridge.ai');
+                  setPassword('password123');
+                  setEmailError('');
+                  setPasswordError('');
+                }}
+                title="Click to populate credentials"
+              >
+                💡 Fill Demo: <strong>student@skillbridge.ai</strong> / <strong>password123</strong>
+              </button>
+            </div>
 
             <form onSubmit={handleSubmit} noValidate>
               {/* Field 1: Email */}
