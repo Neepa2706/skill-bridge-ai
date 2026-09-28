@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { CameraProctorHUD } from '../../components/assessment/CameraProctorHUD';
 import {
   Clock,
   ShieldAlert,
@@ -533,8 +534,14 @@ export const MockTestExamView: React.FC<MockTestExamViewProps> = ({ testId, atte
           )}
         </main>
 
-        {/* Right Question Palette Sidebar */}
+        {/* Right Question Palette Sidebar with Live Camera Proctoring */}
         <aside className="exam-palette-sidebar">
+          <div style={{ marginBottom: '16px' }}>
+            <CameraProctorHUD
+              onViolation={(type, details) => logViolation(type, details)}
+              violationsCount={suspiciousCount}
+            />
+          </div>
           <div className="palette-title">Question Palette</div>
           <div className="palette-grid">
             {questions.map((q, idx) => {

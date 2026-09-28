@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
+import { downloadSkillReportPDF } from '../../utils/reportPdfGenerator';
 import './SkillReportDashboardView.css';
 
 interface SkillItem {
@@ -175,8 +176,12 @@ export const SkillReportDashboardView: React.FC<SkillReportDashboardViewProps> =
   };
 
   const handleDownloadPDF = () => {
-    const token = localStorage.getItem('sb_token');
-    window.open(`/api/student/skill-report/pdf?print=true`, '_blank');
+    if (report) {
+      downloadSkillReportPDF(report, user?.name || 'Student Candidate');
+      addToast('Report Downloaded', 'Official PDF Skill Dossier saved to your device.', 'success');
+    } else {
+      window.open('/api/student/skill-report/pdf?print=true', '_blank');
+    }
   };
 
   if (isLoading) {

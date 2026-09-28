@@ -6,7 +6,7 @@ export type AssessmentCategory = 'programming' | 'logical_reasoning' | 'problem_
 export interface GeneratedQuestion {
   id: string;
   questionText: string;
-  questionType: 'mcq' | 'multiple_choice' | 'short_answer' | 'coding';
+  questionType: 'mcq' | 'multiple_choice' | 'short_answer' | 'coding' | 'fluency';
   options?: string[];
   starterCode?: string;
   codeLanguage?: string;
@@ -35,53 +35,39 @@ export interface AssessmentGenerationResult {
 
 /**
  * Generates dynamic, AI-powered questions based on user's department,
- * target role, and experience level across Programming, Logic, Problem Solving, and Communication.
+ * target role, and experience level across Multiple Programming Languages
+ * (Python, JavaScript/TypeScript, Java, C++, SQL), Logic, Problem Solving, and Direct Speaking Fluency.
  */
 export async function generateAdaptiveAssessment(params: AssessmentGenerationParams): Promise<AssessmentGenerationResult> {
   const department = params.department || 'Computer Science & Engineering';
   const role = params.targetRole || 'Software Developer';
   const level = params.currentLevel || 'Beginner';
-  const languages = params.programmingLanguages?.length ? params.programmingLanguages.join(', ') : 'Python, JavaScript, SQL';
+  const languages = params.programmingLanguages?.length ? params.programmingLanguages.join(', ') : 'Python, JavaScript, Java, C++, SQL';
 
   const systemPrompt = `You are the lead AI Assessment Architect for SkillBridge AI.
 Generate comprehensive, real-time technical assessments tailored to a student's exact academic background and career goals.
+You MUST test multiple programming languages (Python, JavaScript/TypeScript, Java, C++, SQL) as well as technical communication and direct speaking fluency.
 You MUST return ONLY valid JSON matching the specified schema. No markdown backticks, no conversational preamble.`;
 
-  const userPrompt = `Generate exactly 6 real assessment questions tailored for a candidate with:
+  const userPrompt = `Generate comprehensive assessment questions tailored for a candidate with:
 - Academic Department: ${department}
 - Target Career Role: ${role}
 - Experience Level: ${level}
 - Primary Languages / Interests: ${languages}
 
-The 6 questions MUST represent these 4 mandatory domains:
-1. Programming (2 questions):
-   - Question 1: Multiple choice ('mcq') on language syntax, memory, or runtime behavior.
-   - Question 2: Practical Coding ('coding') with a function signature, starter code, and problem statement.
-2. Logical Reasoning (1 question):
-   - Question 3: Multiple choice ('mcq') testing algorithmic deduction, series, or discrete math logic.
-3. Problem Solving (2 questions):
-   - Question 4: Multiple choice ('mcq') evaluating data structures or system design trade-offs.
-   - Question 5: Short Answer ('short_answer') asking the candidate to describe step-by-step how they would solve a real-world problem or design an algorithm.
-4. Communication (1 question):
-   - Question 6: Short Answer ('short_answer') or scenario testing professional technical communication, team collaboration, or communicating trade-offs to stakeholders.
+The assessment MUST comprehensively test:
+1. Python Programming & Memory Model
+2. JavaScript / TypeScript & Modern Async Runtime
+3. Java & Object-Oriented System Design
+4. C++ & Systems Memory Management
+5. SQL & Database Query Architecture
+6. Logical Reasoning & Pattern Analysis
+7. Problem Solving & Distributed Architecture
+8. Hands-on Multi-Language Coding Sandbox
+9. Technical & Workplace Stakeholder Communication
+10. Direct Speaking & Fluency Test (Speaking directly into microphone)
 
-Return a JSON array of objects with these exact keys:
-[
-  {
-    "questionText": "Full question statement here",
-    "questionType": "mcq" | "short_answer" | "coding",
-    "category": "programming" | "logical_reasoning" | "problem_solving" | "communication",
-    "skillName": "Specific skill name (e.g., 'Python Programming', 'Logical Reasoning', 'Data Structures & Algorithms', 'Technical Communication')",
-    "difficulty": "easy" | "medium" | "hard",
-    "points": 10,
-    "options": ["Choice A", "Choice B", "Choice C", "Choice D"], // Required for mcq, omit or empty for others
-    "starterCode": "def solution():\\n    # Write your solution here\\n    pass", // Required for coding
-    "codeLanguage": "python", // Required for coding
-    "correctAnswer": "Exact string of correct choice for mcq, reference solution for coding, or exemplary answer for short_answer",
-    "explanation": "Detailed rationale explaining the correct answer",
-    "rubric": "Evaluation guidelines for AI scoring of short answers or coding"
-  }
-]`;
+Return a JSON array of objects with keys: questionText, questionType ("mcq" | "short_answer" | "coding" | "fluency"), category, skillName, difficulty, points, options, starterCode, codeLanguage, correctAnswer, explanation, rubric.`;
 
   let rawQuestions: any[] | null = null;
 
@@ -89,15 +75,15 @@ Return a JSON array of objects with these exact keys:
   if (gemini.hasApiKey()) {
     try {
       const aiResult = await gemini.generateJSONWithResult<any[]>(userPrompt, systemPrompt);
-      if (aiResult.success && Array.isArray(aiResult.data) && aiResult.data.length > 0) {
+      if (aiResult.success && Array.isArray(aiResult.data) && aiResult.data.length >= 6) {
         rawQuestions = aiResult.data;
       }
     } catch (err) {
-      console.warn('[AssessmentGenerator] Gemini generation failed, falling back to curated adaptive bank:', err);
+      console.warn('[AssessmentGenerator] Gemini generation failed, falling back to comprehensive multi-language question bank:', err);
     }
   }
 
-  // Fallback to high-quality curated adaptive question bank if AI is offline or unavailable
+  // Fallback to high-quality curated multi-language adaptive bank
   if (!rawQuestions || rawQuestions.length === 0) {
     rawQuestions = getCuratedAdaptiveQuestions(role, level, department);
   }
@@ -107,13 +93,14 @@ Return a JSON array of objects with these exact keys:
     const rawType = String(q.questionType || '').toLowerCase();
     const type: GeneratedQuestion['questionType'] =
       rawType === 'coding' ? 'coding' :
+      rawType === 'fluency' || rawType === 'speaking' ? 'fluency' :
       rawType === 'short_answer' ? 'short_answer' : 'mcq';
 
     const rawCategory = String(q.category || '').toLowerCase();
     const category: AssessmentCategory =
       rawCategory.includes('logic') ? 'logical_reasoning' :
       rawCategory.includes('problem') ? 'problem_solving' :
-      rawCategory.includes('comm') ? 'communication' : 'programming';
+      rawCategory.includes('comm') || type === 'fluency' ? 'communication' : 'programming';
 
     let options: string[] | undefined = undefined;
     if (type === 'mcq') {
@@ -132,7 +119,12 @@ Return a JSON array of objects with these exact keys:
       correctAnswer: String(q.correctAnswer || ''),
       explanation: q.explanation ? String(q.explanation) : undefined,
       rubric: q.rubric ? String(q.rubric) : undefined,
-      skillName: String(q.skillName || (category === 'programming' ? 'Programming & Syntax' : category === 'logical_reasoning' ? 'Logical Deduction' : category === 'problem_solving' ? 'Problem Solving & Systems' : 'Technical Communication')),
+      skillName: String(q.skillName || (
+        type === 'fluency' ? 'Verbal Fluency & Pronunciation' :
+        category === 'programming' ? 'Programming & Multi-Language Syntax' :
+        category === 'logical_reasoning' ? 'Logical Deduction' :
+        category === 'problem_solving' ? 'Problem Solving & Systems' : 'Technical Communication'
+      )),
       category,
       difficulty: q.difficulty === 'hard' ? 'hard' : q.difficulty === 'easy' ? 'easy' : 'medium',
       points: Number(q.points) || 10
@@ -146,13 +138,15 @@ Return a JSON array of objects with these exact keys:
 }
 
 /**
- * Curated, high-quality question bank spanning Programming, Logic, Problem Solving, and Communication.
- * Guarantees zero downtime and instant availability for all candidates.
+ * Comprehensive curated question bank covering Multiple Programming Languages:
+ * Python, JavaScript/TypeScript, Java, C++, SQL, Algorithms, Logic,
+ * Technical Communication, and Direct Speaking Fluency.
  */
 function getCuratedAdaptiveQuestions(role: string, level: string, department: string): any[] {
   return [
+    // 1. Python Programming
     {
-      questionText: "In Python and modern memory architectures, which statement regarding mutable vs immutable objects is correct?",
+      questionText: "In Python memory architecture, which statement regarding mutable vs immutable objects is correct?",
       questionType: "mcq",
       category: "programming",
       skillName: "Python Programming & Memory Model",
@@ -167,21 +161,82 @@ function getCuratedAdaptiveQuestions(role: string, level: string, department: st
       correctAnswer: "Integers, strings, and tuples are immutable, meaning modifying them creates a new memory reference.",
       explanation: "In Python, primitive types like int, str, and tuple are immutable. Any modification rebinds the identifier to a new object in memory. Lists and dicts are mutable and modified in place."
     },
+
+    // 2. JavaScript / TypeScript
     {
-      questionText: "Write a function `two_sum(nums, target)` that returns the indices of the two numbers in `nums` such that they add up to `target`. Assume each input has exactly one solution.",
-      questionType: "coding",
+      questionText: "In the JavaScript / Node.js V8 event loop, what is the exact execution order of microtasks vs macrotasks?",
+      questionType: "mcq",
       category: "programming",
-      skillName: "Algorithms & Hash Maps",
+      skillName: "JavaScript / TypeScript Event Loop",
       difficulty: "medium",
       points: 10,
-      codeLanguage: "python",
-      starterCode: "def two_sum(nums, target):\n    # Return a tuple or list of the two zero-based indices\n    # e.g., for nums=[2, 7, 11, 15], target=9 -> [0, 1]\n    seen = {}\n    for i, n in enumerate(nums):\n        complement = target - n\n        if complement in seen:\n            return [seen[complement], i]\n        seen[n] = i\n    return []",
-      correctAnswer: "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        comp = target - num\n        if comp in seen:\n            return [seen[comp], i]\n        seen[num] = i\n    return []",
-      explanation: "A single-pass hash map achieves O(n) time complexity and O(n) space complexity by storing each element's complement.",
-      rubric: "10 points for O(n) hash table approach with correct indices; 6 points for O(n^2) nested loop; 0 points for unhandled logic."
+      options: [
+        "The microtask queue (Promise callbacks, queueMicrotask) is completely drained immediately after the current synchronous script and before the next macrotask (setTimeout, setInterval).",
+        "Macrotasks always execute before any Promise.then() callback.",
+        "setTimeout(fn, 0) executes with higher priority than process.nextTick() and Promise microtasks.",
+        "Async/await pauses the entire Node.js operating system thread until an HTTP request finishes."
+      ],
+      correctAnswer: "The microtask queue (Promise callbacks, queueMicrotask) is completely drained immediately after the current synchronous script and before the next macrotask (setTimeout, setInterval).",
+      explanation: "V8 processes all pending microtasks (resolved Promises, queueMicrotask) immediately after the synchronous frame finishes and before picking the next timer/macrotask from the event queue."
     },
+
+    // 3. Java & Object-Oriented Design
     {
-      questionText: "Consider the series: 2, 6, 12, 20, 30, ?. What is the next number in this sequence, and what is the underlying rule?",
+      questionText: "In Java, what is the fundamental difference between an Abstract Class and an Interface (Java 8+)?",
+      questionType: "mcq",
+      category: "programming",
+      skillName: "Java & Object-Oriented Principles",
+      difficulty: "medium",
+      points: 10,
+      options: [
+        "An abstract class can maintain state with instance fields and constructors; an interface can define default methods and static constants but cannot maintain mutable instance state.",
+        "Interfaces can have private constructors to prevent instantiation.",
+        "A Java class can extend multiple abstract classes but only implement a single interface.",
+        "Abstract classes cannot declare non-abstract (concrete) methods."
+      ],
+      correctAnswer: "An abstract class can maintain state with instance fields and constructors; an interface can define default methods and static constants but cannot maintain mutable instance state.",
+      explanation: "Java supports single class inheritance (one abstract class with instance state/constructors) and multiple interface implementation. Interfaces cannot hold instance variables."
+    },
+
+    // 4. C++ & Systems Memory
+    {
+      questionText: "In Modern C++ (C++11/C++20), which smart pointer guarantees exclusive ownership of a dynamically allocated heap object and automatically frees memory upon leaving scope?",
+      questionType: "mcq",
+      category: "programming",
+      skillName: "C++ & Systems Memory Management",
+      difficulty: "medium",
+      points: 10,
+      options: [
+        "std::unique_ptr (implements strict move-only semantics and zero reference count overhead)",
+        "std::shared_ptr (maintains an atomic control block for multi-threaded reference counting)",
+        "std::weak_ptr (holds a non-owning observer reference to break circular dependencies)",
+        "raw pointer with manual delete keyword called inside an exception handler"
+      ],
+      correctAnswer: "std::unique_ptr (implements strict move-only semantics and zero reference count overhead)",
+      explanation: "std::unique_ptr embodies RAII for single exclusive ownership without reference counting overhead, moving ownership via std::move."
+    },
+
+    // 5. SQL & Relational Databases
+    {
+      questionText: "In SQL and relational database engines (PostgreSQL / MySQL), which index type is best suited for range queries (e.g., WHERE age BETWEEN 20 AND 30)?",
+      questionType: "mcq",
+      category: "programming",
+      skillName: "SQL & Database Indexing",
+      difficulty: "medium",
+      points: 10,
+      options: [
+        "B-Tree Index (stores sorted keys allowing efficient O(log N) range scans and ordering)",
+        "Hash Index (only supports exact O(1) equality lookups using hash buckets)",
+        "Full-Text GIN Index (designed specifically for inverted lexeme parsing)",
+        "Bitmap Index on high-cardinality unique primary keys"
+      ],
+      correctAnswer: "B-Tree Index (stores sorted keys allowing efficient O(log N) range scans and ordering)",
+      explanation: "B-Tree indexes maintain sorted leaf nodes connected in a doubly linked list, making contiguous range traversal (BETWEEN, <, >) fast and efficient."
+    },
+
+    // 6. Logical Reasoning & Pattern Analysis
+    {
+      questionText: "Consider the numeric progression: 2, 6, 12, 20, 30, ?. What is the next number in this sequence, and what is the underlying rule?",
       questionType: "mcq",
       category: "logical_reasoning",
       skillName: "Logical Reasoning & Pattern Analysis",
@@ -196,35 +251,43 @@ function getCuratedAdaptiveQuestions(role: string, level: string, department: st
       correctAnswer: "42 (Differences are consecutive even numbers: +4, +6, +8, +10, +12, or n * (n + 1))",
       explanation: "The differences are: 6-2=4, 12-6=6, 20-12=8, 30-20=10. The next difference is 12, giving 30+12 = 42. Alternatively, n*(n+1) for n=1..6 gives 2, 6, 12, 20, 30, 42."
     },
+
+    // 7. Problem Solving & Systems Architecture
     {
-      questionText: "When designing a low-latency caching layer for user sessions, why is a Hash Table / Key-Value store preferred over a balanced Binary Search Tree (AVL / Red-Black)?",
+      questionText: "When designing a low-latency caching layer for user sessions, why is a Key-Value In-Memory store (e.g., Redis) preferred over a traditional disk-based relational query?",
       questionType: "mcq",
       category: "problem_solving",
       skillName: "Data Structures & System Design",
       difficulty: "medium",
       points: 10,
       options: [
-        "Hash tables provide average O(1) lookup and insertion, whereas balanced BSTs require O(log N) operations.",
-        "Balanced BSTs require more network bandwidth per socket connection.",
-        "Hash tables guarantee zero memory fragmentation across Linux kernels.",
-        "BSTs cannot store string keys or complex serializable values."
+        "In-memory hash tables provide average O(1) read/write latency with microsecond retrieval times without disk I/O seek overhead.",
+        "In-memory stores consume zero server RAM across clustered environments.",
+        "Disk databases require more TCP packet serialization headers.",
+        "Relational databases cannot index UUID or string primary keys."
       ],
-      correctAnswer: "Hash tables provide average O(1) lookup and insertion, whereas balanced BSTs require O(log N) operations.",
-      explanation: "A hash table computes a hash code directly into a bucket array for average O(1) time complexity, whereas tree traversals require log2(N) pointer dereferences."
+      correctAnswer: "In-memory hash tables provide average O(1) read/write latency with microsecond retrieval times without disk I/O seek overhead.",
+      explanation: "RAM access is orders of magnitude faster than NVMe/HDD storage, giving key-value caches sub-millisecond response times."
     },
+
+    // 8. Hands-on Multi-Language Coding Challenge
     {
-      questionText: "Describe step-by-step how you would architect an idempotent API endpoint for processing student mock test submissions to prevent duplicate records if a network disconnect occurs during submission.",
-      questionType: "short_answer",
-      category: "problem_solving",
-      skillName: "API Architecture & Idempotency",
+      questionText: "Write a function `two_sum(nums, target)` that returns the indices of two numbers that add up to `target`. You can write your solution in Python, JavaScript, Java, or C++.",
+      questionType: "coding",
+      category: "programming",
+      skillName: "Multi-Language Algorithms & Hash Maps",
       difficulty: "medium",
       points: 10,
-      correctAnswer: "Client generates a unique idempotency key or attemptId. Server verifies if attemptId is already completed or locked in database; if previously processed, return the cached result without re-executing grading. Use atomic transactions or database row locks.",
-      explanation: "Idempotency ensures that identical retries cause no unintended state mutation.",
-      rubric: "Look for mention of unique idempotency token/attempt ID, database lock or status check ('in_progress' vs 'completed'), atomic transaction, and returning cached status."
+      codeLanguage: "python",
+      starterCode: "# Select your preferred programming language\ndef two_sum(nums, target):\n    # Return a list of the two zero-based indices\n    # e.g., for nums=[2, 7, 11, 15], target=9 -> [0, 1]\n    seen = {}\n    for i, n in enumerate(nums):\n        diff = target - n\n        if diff in seen:\n            return [seen[diff], i]\n        seen[n] = i\n    return []",
+      correctAnswer: "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        comp = target - num\n        if comp in seen:\n            return [seen[comp], i]\n        seen[num] = i\n    return []",
+      explanation: "A single-pass hash map achieves O(n) time complexity and O(n) space complexity by storing each element's complement.",
+      rubric: "10 points for O(n) hash table approach with correct indices; 6 points for O(n^2) nested loop; 0 points for unhandled logic."
     },
+
+    // 9. Technical & Workplace Stakeholder Communication
     {
-      questionText: "During a major sprint deadline, you discover that a third-party dependency used in your team's microservice has a critical security vulnerability. How do you communicate this issue to your project lead and prioritize remediation?",
+      questionText: "During a major sprint deadline, you discover that a third-party dependency in your team's microservice has a critical security vulnerability. How do you communicate this issue to your engineering lead and prioritize remediation?",
       questionType: "short_answer",
       category: "communication",
       skillName: "Technical Communication & Incident Management",
@@ -233,7 +296,19 @@ function getCuratedAdaptiveQuestions(role: string, level: string, department: st
       correctAnswer: "Immediately alert the tech lead with a clear summary: describe the vulnerability severity (CVE), affected endpoints, blast radius, potential exploit vectors, and propose 2 actionable options (patching version, applying a temporary WAF rule or proxy mitigation).",
       explanation: "Effective engineering communication is prompt, structured with severity and impact, and offers solutions rather than just raising alarms.",
       rubric: "Assess whether the answer includes immediate structured notification, impact assessment, and proposed mitigation options."
+    },
+
+    // 10. Direct Speaking & Fluency Test (Live Voice Recording)
+    {
+      questionText: "FLUENCY & SPEAKING TEST: Speak directly into your microphone for 30 to 60 seconds.\nPrompt: Describe an engineering project you built or an interesting algorithm you implemented. Explain your architectural choices and how you resolved an unexpected technical challenge.\n(Your speaking speed in WPM, pronunciation clarity, and fluency will be recorded in real-time).",
+      questionType: "fluency",
+      category: "communication",
+      skillName: "Verbal Fluency & Technical Pronunciation",
+      difficulty: "medium",
+      points: 10,
+      correctAnswer: "A clear, well-paced explanation (120-150 WPM) describing project architecture, key technical choices, and problem resolution with accurate pronunciation.",
+      explanation: "Evaluates conversational speed (WPM), pronunciation clarity, vocabulary range, and verbal confidence.",
+      rubric: "10 points: Clear pronunciation, fluent cadence (120-160 WPM), structured thought; 7 points: understandable with minor hesitation; 4 points: rushed (>180 WPM) or very slow (<90 WPM) speech."
     }
   ];
 }
-

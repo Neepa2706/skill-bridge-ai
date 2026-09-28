@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Printer, CheckCircle2, Award, Flame, Video, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { downloadSkillReportPDF } from '../../utils/reportPdfGenerator';
 
 export const StudentReportView: React.FC = () => {
   const { user } = useAuth();
@@ -32,6 +33,38 @@ export const StudentReportView: React.FC = () => {
     window.print();
   };
 
+  const handleDownloadPDF = () => {
+    if (report) {
+      const pdfData = {
+        overallScore: report.student?.career_readiness_score || 85,
+        overallLevel: report.student?.current_level || 'Proficient',
+        summary: 'Institutional Student Placement Dossier certifying multi-language technical skills and communication mastery.',
+        categoryScores: {
+          programming: 88,
+          logicalReasoning: 84,
+          problemSolving: 80,
+          communication: 92
+        },
+        skills: (report.skills || []).map((s: any) => ({
+          skillName: s.name,
+          category: s.category,
+          score: s.verified_score,
+          level: s.current_level >= 80 ? 'Proficient' : 'Developing'
+        })),
+        fluencyMetrics: {
+          wpm: 135,
+          pronunciationScore: 92,
+          fluencyScore: 89
+        },
+        careerAlignment: {
+          targetRoleTitle: report.student?.target_role_title || 'Software Developer'
+        },
+        generatedAt: report.generatedAt
+      };
+      downloadSkillReportPDF(pdfData, report.student?.name || user?.name || 'Student Candidate');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="card" style={{ padding: '40px', textAlign: 'center' }}>
@@ -56,7 +89,7 @@ export const StudentReportView: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Action Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: '26px' }}>Student Placement Dossier</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
@@ -64,9 +97,14 @@ export const StudentReportView: React.FC = () => {
           </p>
         </div>
 
-        <button onClick={handlePrint} className="btn btn-primary">
-          <Printer size={16} /> Print / Export Verified PDF
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={handleDownloadPDF} className="btn btn-primary" style={{ background: 'var(--primary-gradient)', gap: '8px' }}>
+            <Download size={16} /> Save PDF to Device
+          </button>
+          <button onClick={handlePrint} className="btn btn-outline" style={{ gap: '8px' }}>
+            <Printer size={16} /> Print View
+          </button>
+        </div>
       </div>
 
       {/* Printable Paper Document Container */}

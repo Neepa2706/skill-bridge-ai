@@ -96,7 +96,7 @@ router.post('/start', authenticateToken, requireRole(['student', 'admin']), asyn
           assessmentId,
           skillId,
           q.questionText,
-          q.questionType,
+          q.questionType === 'fluency' ? 'short_answer' : q.questionType,
           JSON.stringify(q.options || []),
           JSON.stringify(q.correctAnswer),
           q.explanation || q.rubric || '',

@@ -69,7 +69,7 @@ export const StudentDashboardView: React.FC<StudentDashboardViewProps> = ({ onNa
         const data = await res.json();
         setRoadmapSteps(data.steps || []);
       }
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const handleStartRecommendation = async (rec: any) => {
@@ -166,19 +166,10 @@ export const StudentDashboardView: React.FC<StudentDashboardViewProps> = ({ onNa
             )}
           </p>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
             <button onClick={onStartAssessment} className="btn btn-primary" id="start-assessment-cta">
               <ShieldCheck size={16} /> {hasCompletedAssessment ? 'Retake AI Assessment' : 'Start AI Baseline Assessment'}
             </button>
-            <a
-              href="/api/assessment/seb-config"
-              download="SkillBridge-Assessment.seb"
-              className="btn btn-outline"
-              id="hero-seb-download-btn"
-              title="Launch assessment inside Safe Exam Browser"
-            >
-              🛡️ Download SEB Config (.seb)
-            </a>
             {hasCompletedAssessment && (
               <>
                 <button onClick={() => onNavigate('skill-report')} className="btn btn-outline">
@@ -190,7 +181,6 @@ export const StudentDashboardView: React.FC<StudentDashboardViewProps> = ({ onNa
               </>
             )}
           </div>
-
         </div>
 
         {/* Career Readiness Circular Visual */}

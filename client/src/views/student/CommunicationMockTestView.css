@@ -1,7 +1,7 @@
 /* SkillBridge AI - Conversation Mock Test Styling */
 
 .comm-mock-container {
-  max-width: 960px;
+  max-width: 1040px;
   margin: 0 auto;
   padding: 32px 20px;
   display: flex;
@@ -13,7 +13,7 @@
   background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  padding: 36px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -33,4 +33,132 @@
   font-size: 13.5px;
   font-weight: 600;
   color: #e2e8f0;
+}
+
+/* Pre-Exam Preparation Tabs */
+.comm-prep-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.comm-prep-tab {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.comm-prep-tab:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.comm-prep-tab.active {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Video Lessons Showcase */
+.comm-video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.comm-video-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.comm-video-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.comm-video-thumb {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #030712;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comm-video-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+.comm-video-duration {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #f8fafc;
+  font-family: monospace;
+}
+
+.comm-video-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+/* Lesson Cards */
+.comm-lesson-card {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comm-lesson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comm-lesson-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
 }
